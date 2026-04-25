@@ -1,6 +1,7 @@
 import { Elysia } from "elysia";
 import { db } from "./db";
 import { users } from "./db/schema";
+import { usersRoute } from "./routes/users-route";
 
 const app = new Elysia()
   .get("/", () => "Hello World from Elysia!")
@@ -13,6 +14,7 @@ const app = new Elysia()
       return { error: "Failed to fetch users. Make sure your database is running and credentials in .env are correct." };
     }
   })
+  .use(usersRoute)
   .listen(3000);
 
 console.log(
