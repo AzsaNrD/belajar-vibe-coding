@@ -2,6 +2,12 @@ import { Elysia, t } from "elysia";
 import { registerUser, loginUser, getCurrentUser, logoutUser } from "../services/users-service";
 
 export const usersRoute = new Elysia({ prefix: "/api/users" })
+  .derive(({ headers }) => {
+    const auth = headers.authorization;
+    return {
+      token: auth?.startsWith("Bearer ") ? auth.substring(7) : undefined
+    };
+  })
   .post("/", async ({ body, set }) => {
     const result = await registerUser(body);
 
@@ -33,8 +39,7 @@ export const usersRoute = new Elysia({ prefix: "/api/users" })
       password: t.String(),
     })
   })
-  .get("/current", async ({ headers, set }) => {
-    const token = headers.authorization?.split(" ")[1];
+  .get("/current", async ({ token, set }) => {
     const result = await getCurrentUser(token);
 
     if (result.error) {
@@ -44,8 +49,7 @@ export const usersRoute = new Elysia({ prefix: "/api/users" })
 
     return result;
   })
-  .get("/logout", async ({ headers, set }) => {
-    const token = headers.authorization?.split(" ")[1];
+  .delete("/logout", async ({ token, set }) => {
     const result = await logoutUser(token);
 
     if (result.error) {
