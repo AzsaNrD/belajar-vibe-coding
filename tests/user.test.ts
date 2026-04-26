@@ -26,12 +26,12 @@ describe("User API", () => {
       );
 
       expect(response.status).toBe(200);
-      const data = await response.json();
+      const data = await response.json() as any;
       expect(data).toEqual({ data: "OK" });
 
       const [user] = await db.select().from(users).where(eq(users.email, "test@example.com"));
       expect(user).toBeDefined();
-      expect(user.name).toBe("Test User");
+      expect(user!.name).toBe("Test User");
     });
 
     it("should fail if email is already registered", async () => {
@@ -61,7 +61,7 @@ describe("User API", () => {
       );
 
       expect(response.status).toBe(400);
-      const data = await response.json();
+      const data = await response.json() as any;
       expect(data.error).toBe("Email sudah terdaftar");
     });
 
@@ -127,7 +127,7 @@ describe("User API", () => {
       );
 
       expect(response.status).toBe(200);
-      const data = await response.json();
+      const data = await response.json() as any;
       expect(data.data).toBeDefined(); // Token
 
       const [session] = await db.select().from(sessions).where(eq(sessions.token, data.data));
@@ -147,7 +147,7 @@ describe("User API", () => {
       );
 
       expect(response.status).toBe(401);
-      const data = await response.json();
+      const data = await response.json() as any;
       expect(data.error).toBe("Email atau password salah");
     });
   });
@@ -178,7 +178,7 @@ describe("User API", () => {
           }),
         })
       );
-      const loginData = await loginResponse.json();
+      const loginData = await loginResponse.json() as any;
       token = loginData.data;
     });
 
@@ -193,7 +193,7 @@ describe("User API", () => {
       );
 
       expect(response.status).toBe(200);
-      const result = await response.json();
+      const result = await response.json() as any;
       expect(result.data.email).toBe("current@example.com");
       expect(result.data.name).toBe("Current User");
     });
@@ -235,7 +235,7 @@ describe("User API", () => {
           }),
         })
       );
-      const loginData = await loginResponse.json();
+      const loginData = await loginResponse.json() as any;
       token = loginData.data;
     });
 
@@ -250,7 +250,7 @@ describe("User API", () => {
       );
 
       expect(response.status).toBe(200);
-      const result = await response.json();
+      const result = await response.json() as any;
       expect(result.data).toBe("OK");
 
       const [session] = await db.select().from(sessions).where(eq(sessions.token, token));
