@@ -63,3 +63,28 @@ export const loginUser = async (payload: any) => {
 
   return { data: token };
 };
+
+export const getCurrentUser = async (token: string | undefined) => {
+  if (!token) {
+    return { error: "Unauthorized" };
+  }
+
+  // 1. Find session and join with user
+  const result = await db
+    .select({
+      id: users.id,
+      name: users.name,
+      email: users.email,
+      createdAt: users.createdAt,
+    })
+    .from(sessions)
+    .innerJoin(users, eq(sessions.userId, users.id))
+    .where(eq(sessions.token, token))
+    .limit(1);
+
+  if (result.length === 0) {
+    return { error: "Unauthorized" };
+  }
+
+  return { data: result[0] };
+};
