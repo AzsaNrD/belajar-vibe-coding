@@ -3,6 +3,14 @@ import { users, sessions } from "../db/schema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcrypt";
 
+/**
+ * Mendaftarkan pengguna baru ke dalam sistem.
+ * Fungsi ini akan mengecek apakah email sudah terdaftar,
+ * melakukan hashing pada password, dan menyimpan data user ke database.
+ * 
+ * @param payload - Objek yang berisi name, email, dan password dari user
+ * @returns Objek { data: "OK" } jika sukses, atau objek { error: string } jika gagal
+ */
 export const registerUser = async (payload: any) => {
   const { name, email, password } = payload;
 
@@ -31,6 +39,14 @@ export const registerUser = async (payload: any) => {
   return { data: "OK" };
 };
 
+/**
+ * Memverifikasi kredensial pengguna untuk proses login.
+ * Fungsi ini mencari user berdasarkan email, memverifikasi kecocokan password,
+ * dan men-generate token sesi jika kredensial valid.
+ * 
+ * @param payload - Objek yang berisi email dan password login
+ * @returns Objek { data: token } jika login sukses, atau { error: string } jika gagal
+ */
 export const loginUser = async (payload: any) => {
   const { email, password } = payload;
 
@@ -64,6 +80,14 @@ export const loginUser = async (payload: any) => {
   return { data: token };
 };
 
+/**
+ * Mengambil informasi detail profil user yang sedang login saat ini.
+ * Fungsi ini memvalidasi token sesi yang diberikan dan mengembalikan data
+ * user yang berelasi dengan sesi tersebut.
+ * 
+ * @param token - String token autentikasi (Bearer token)
+ * @returns Objek data profil user jika token valid, atau { error: "Unauthorized" } jika tidak valid
+ */
 export const getCurrentUser = async (token: string | undefined) => {
   if (!token) {
     return { error: "Unauthorized" };
@@ -89,6 +113,14 @@ export const getCurrentUser = async (token: string | undefined) => {
   return { data: result[0] };
 };
 
+/**
+ * Melakukan proses logout pengguna dengan cara menghapus token sesi.
+ * Fungsi ini akan mencari sesi berdasarkan token dan menghapusnya dari database
+ * sehingga token tersebut tidak dapat digunakan lagi.
+ * 
+ * @param token - String token autentikasi yang ingin dihapus
+ * @returns Objek { data: "OK" } jika berhasil logout, atau { error: "Unauthorized" } jika gagal
+ */
 export const logoutUser = async (token: string | undefined) => {
   if (!token) {
     return { error: "Unauthorized" };
