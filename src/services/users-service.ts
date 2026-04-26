@@ -88,3 +88,25 @@ export const getCurrentUser = async (token: string | undefined) => {
 
   return { data: result[0] };
 };
+
+export const logoutUser = async (token: string | undefined) => {
+  if (!token) {
+    return { error: "Unauthorized" };
+  }
+
+  // 1. Find session
+  const [foundSession] = await db
+    .select()
+    .from(sessions)
+    .where(eq(sessions.token, token))
+    .limit(1);
+
+  if (!foundSession) {
+    return { error: "Unauthorized" };
+  }
+
+  // 2. Delete session
+  await db.delete(sessions).where(eq(sessions.token, token));
+
+  return { data: "OK" };
+};
